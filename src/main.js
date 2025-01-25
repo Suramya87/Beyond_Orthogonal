@@ -6,12 +6,20 @@
 
 "use strict"
 
+// const { Physics } = require("phaser")
+
 let config = {
     type: Phaser.AUTO,
     width: 800,
     height: 800,
     render:{
         pixelArt: true
+    },
+    physics: {
+        default: 'arcade',
+        arcade:{
+            debug: true,
+        },
     },
     scene: [ Movement ]
 }
