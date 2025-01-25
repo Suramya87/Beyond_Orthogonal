@@ -1,3 +1,4 @@
+
 class Movement extends Phaser.Scene {
     constructor() {
         super('movementScene')
@@ -19,7 +20,7 @@ class Movement extends Phaser.Scene {
 
         this.player.body.setCollideWorldBounds(true)
         this.player.setSize(32,32).setOffset(8,16)
-
+        
         this.anims.create({
             key: 'idle-down',
             frameRate: 0,
@@ -86,7 +87,7 @@ class Movement extends Phaser.Scene {
         this.anims.create({
             key: 'walk-right',
             frameRate: 5,
-            repeat: -1,
+            repeat: 1,
             frames: this.anims.generateFrameNumbers('character',{
                 start: 6,
                 end: 8
@@ -97,39 +98,46 @@ class Movement extends Phaser.Scene {
 
         cursors = this.input.keyboard.createCursorKeys()
     }
-
     update() {
-
-        let playerVector = new Phaser.Math.Vector2(0,0)
-        let playerDirection = 'down'
-        
-        // if (playerDirection == ''){
-            // playerDirection = 'down'
-        // }
+        let playerVector = new Phaser.Math.Vector2(0, 0);
+    
+        if (!this.lastDirection) {
+            this.lastDirection = 'down'; 
+        }
+    
+        let playerDirection = this.lastDirection;
+    
+        // Check for input and update direction
         if (cursors.left.isDown) {
-            playerVector.x =-1
-            playerDirection = 'left'
-        }else if (cursors.right.isDown){
-            playerVector.x = 1
-            playerDirection = 'right'
+            playerVector.x = -1;
+            playerDirection = 'left';
+        } else if (cursors.right.isDown) {
+            playerVector.x = 1;
+            playerDirection = 'right';
         }
-        // up down
+    
         if (cursors.up.isDown) {
-            playerVector.y =-1
-            playerDirection = 'up'
-        }else if (cursors.down.isDown){
-            playerVector.y = 1
-            playerDirection = 'down'
+            playerVector.y = -1;
+            playerDirection = 'up';
+        } else if (cursors.down.isDown) {
+            playerVector.y = 1;
+            playerDirection = 'down';
         }
-        playerVector.normalize()
-
-
-        // this.player.x += playerVector.x * this.PLAYER_VELOCITY 
-        // this.player.y += playerVector.y * this.PLAYER_VELOCITY 
-        this.player.setVelocity(this.PLAYER_VELOCITY * playerVector.x,this.PLAYER_VELOCITY * playerVector.y)
-
-        let playerMovement
-        playerVector.length() ? playerMovement = 'walk' :playerMovement = 'idle'
-        this.player.play(playerMovement + '-' + playerDirection, true)
-}
+    
+        playerVector.normalize();
+    
+        this.player.setVelocity(this.PLAYER_VELOCITY * playerVector.x,this.PLAYER_VELOCITY * playerVector.y);
+        let playerMovement = playerVector.length() ? 'walk' : 'idle';
+    
+        // Only update the last direction if the player is moving
+        if (playerVector.length()) {
+            this.lastDirection = playerDirection;
+        }
+    
+        this.player.play(playerMovement + '-' + this.lastDirection, true);
+    
+        // Debug output for direction
+        // console.log(`Current Direction: ${this.lastDirection}`);
+    }
+    
 }
